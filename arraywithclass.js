@@ -54,7 +54,7 @@ class Array {
       throw new TypeError(callback + " is not a function");
     }
     let accumulator = initialValue;
-    var startIndex = 0;
+    let startIndex = 0;
     if (initialValue === undefined) {
       accumulator = this.internalArray[0];
       startIndex = 1;
@@ -71,20 +71,52 @@ class Array {
     return accumulator;
   }
 }
+
+//============================================
+// Outputs and tests
+//============================================
+
+//============================================
+// new Array
+//============================================
+
 let numbers = new Array([1, 2, 3, 4, 5, 6]);
 
-// numbers.foreach((item) => console.log(item));
-// let multipleOfTwo = numbers.customMap((element) => element * 2);
-// console.log(multipleOfTwo);
+//============================================
+// map
+//============================================
+
+let multipleOfTwo = numbers.customMap((element) => element * 2);
+console.log(multipleOfTwo);
+
+//============================================
+// foreach
+//============================================
+
+numbers.foreach((item) => console.log(item));
+
+//============================================
+// filter
+//============================================
 
 let oddNumbers = numbers.filter((element) => element % 2);
+console.log(oddNumbers);
+
+//============================================
+// reduce
+//============================================
+
+// reduce without intial value
+
 let sumOfArray = numbers.reduce(
   (accumulator, element) => element + accumulator
 );
+console.log(sumOfArray);
+
+// reduce with intial value
+
 let sumOfArrayPlus100 = numbers.reduce(
   (accumulator, element) => element + accumulator,
   100
 );
-console.log(oddNumbers);
-console.log(sumOfArray);
 console.log(sumOfArrayPlus100);

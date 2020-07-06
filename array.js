@@ -79,20 +79,56 @@ var Array = /*#__PURE__*/ (function () {
   return Array;
 })();
 
+//============================================
+// Outputs and tests
+//============================================
+
+//============================================
+// new Array
+//============================================
+
 var numbers = new Array([1, 2, 3, 4, 5, 6]);
-// numbers.foreach((item) => console.log(item));
 
-// var multipleOfTwo = numbers.customMap((element) => element * 2);
-// console.log(multipleOfTwo);
+//============================================
+// map
+//============================================
 
-var oddNumbers = numbers.filter((element) => element % 2);
-var sumOfArray = numbers.reduce(
-  (accumulator, element) => element + accumulator
-);
-var sumOfArrayPlus100 = numbers.reduce(
-  (accumulator, element) => element + accumulator,
-  100
-);
+var multipleOfTwo = numbers.customMap(function (element) {
+  return element * 2;
+});
+console.log(multipleOfTwo);
+
+//============================================
+// foreach
+//============================================
+
+numbers.foreach(function (item) {
+  console.log(item);
+});
+
+//============================================
+// filter
+//============================================
+
+var oddNumbers = numbers.filter(function (element) {
+  return element % 2 !== 0;
+});
 console.log(oddNumbers);
+
+//============================================
+// reduce
+//============================================
+
+// reduce without intial value
+
+var sumOfArray = numbers.reduce(function (accumulator, element) {
+  return element + accumulator;
+});
 console.log(sumOfArray);
+
+// reduce with intial value
+
+var sumOfArrayPlus100 = numbers.reduce(function (accumulator, element) {
+  return element + accumulator, 100;
+});
 console.log(sumOfArrayPlus100);
