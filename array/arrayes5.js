@@ -68,12 +68,58 @@ var Array = /*#__PURE__*/ (function () {
       throw new TypeError(callback + " is not a function");
     }
     var result = [];
+    var element;
     for (var index = 0; index < this.length; index++) {
-      if (callback(this.internalArray[index], index, this.internalArray)) {
+      element = this.internalArray[index];
+      if (callback(element, index, this.internalArray)) {
         result.push(this.internalArray[index]);
       }
     }
     return result;
+  };
+
+  _proto.findIndex = function findIndex(callback) {
+    // Robustness principle – Postel’s law, after Jon Postel
+    if (typeof callback !== "function") {
+      throw new TypeError(callback + " is not a function");
+    }
+    var element;
+    for (var index = 0; index < this.length; index++) {
+      element = this.internalArray[index];
+      if (callback(element, index, this.internalArray)) {
+        return index;
+      }
+    }
+
+    return -1;
+  };
+
+  _proto.find = function find(callback) {
+    // Robustness principle – Postel’s law, after Jon Postel
+    if (typeof callback !== "function") {
+      throw new TypeError(callback + " is not a function");
+    }
+    var index = this.findIndex(callback);
+    if (index === -1) {
+      return undefined;
+    }
+    return this.internalArray[index];
+  };
+
+  _proto.indexOf = function indexOf(searchedElement) {
+    var index = this.findIndex((element) => element === searchedElement);
+    return index;
+  };
+
+  _proto.lastIndexOf = function lastIndexOf(searchedElement) {
+    var value;
+    for (var index = this.length - 1; index >= 0; index--) {
+      value = this.internalArray[index];
+      if (value === searchedElement) {
+        return index;
+      }
+    }
+    return -1;
   };
 
   return Array;
@@ -87,7 +133,7 @@ var Array = /*#__PURE__*/ (function () {
 // new Array
 //============================================
 
-var numbers = new Array([1, 2, 3, 4, 5, 6]);
+var numbers = new Array([1, 2, 3, 4, 5, 6, 6, 5, 4, 3, 2, 1]);
 
 //============================================
 // map
@@ -132,3 +178,26 @@ var sumOfArrayPlus100 = numbers.reduce(function (accumulator, element) {
   return element + accumulator, 100;
 });
 console.log(sumOfArrayPlus100);
+
+//============================================
+// findIndex
+//============================================
+
+var firstMultipleOf3 = numbers.findIndex((element) => element % 3 === 0);
+
+//============================================
+// indexOf
+//============================================
+
+var indexOf1 = numbers.indexOf(1);
+
+//============================================
+// find
+//============================================
+
+var firstElementGreaterThan3 = numbers.find((e) => e > 3);
+
+//============================================
+// lastIndexOf
+//============================================
+var lastIndexOf1 = numbers.lastIndexOf(1);

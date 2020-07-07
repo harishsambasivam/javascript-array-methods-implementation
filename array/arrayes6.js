@@ -1,4 +1,3 @@
-// Refactored version #1 of map and forEach under the hood
 class Array {
   constructor(value) {
     this.internalArray = value;
@@ -6,7 +5,6 @@ class Array {
   }
 
   foreach(callback) {
-    // Robustness principle – Postel's law, after Jon Postel
     if (typeof callback !== "function") {
       throw new TypeError(callback + " is not a function");
     }
@@ -17,12 +15,10 @@ class Array {
   }
 
   customMap(callback) {
-    // Robustness principle – Postel's law, after Jon Postel
     if (typeof callback !== "function") {
       throw new TypeError(callback + " is not a function");
     }
     let transformedArray = [];
-    // Projects each element of a sequence into a new form.
     for (let i = 0; i < this.length; i++) {
       const currentValue = this.internalArray[i];
       const currentTransformedValue = callback(
@@ -36,7 +32,6 @@ class Array {
   }
 
   filter(callback) {
-    // Robustness principle – Postel’s law, after Jon Postel
     if (typeof callback !== "function") {
       throw new TypeError(callback + " is not a function");
     }
@@ -49,7 +44,6 @@ class Array {
   }
 
   reduce(callback, initialValue) {
-    // Robustness principle – Postel’s law, after Jon Postel
     if (typeof callback !== "function") {
       throw new TypeError(callback + " is not a function");
     }
@@ -70,6 +64,48 @@ class Array {
     }
     return accumulator;
   }
+
+  findIndex(callback) {
+    if (typeof callback !== "function") {
+      throw new TypeError(callback + " is not a function");
+    }
+    let element;
+    for (let index = 0; index < this.length; index++) {
+      element = this.internalArray[index];
+      if (callback(element, index, this.internalArray)) {
+        return index;
+      }
+    }
+
+    return -1;
+  }
+
+  find(callback) {
+    if (typeof callback !== "function") {
+      throw new TypeError(callback + " is not a function");
+    }
+    let index = this.findIndex(callback);
+    if (index === -1) {
+      return undefined;
+    }
+    return this.internalArray[index];
+  }
+
+  indexOf(searchedElement) {
+    let index = this.findIndex((element) => element === searchedElement);
+    return index;
+  }
+
+  lastIndexOf(searchedElement) {
+    let value;
+    for (let index = this.length - 1; index >= 0; index--) {
+      value = this.internalArray[index];
+      if (value === searchedElement) {
+        return index;
+      }
+    }
+    return -1;
+  }
 }
 
 //============================================
@@ -80,26 +116,32 @@ class Array {
 // new Array
 //============================================
 
-let numbers = new Array([1, 2, 3, 4, 5, 6]);
+var numbers = new Array([1, 2, 3, 4, 5, 6, 6, 5, 4, 3, 2, 1]);
 
 //============================================
 // map
 //============================================
 
-let multipleOfTwo = numbers.customMap((element) => element * 2);
+var multipleOfTwo = numbers.customMap(function (element) {
+  return element * 2;
+});
 console.log(multipleOfTwo);
 
 //============================================
 // foreach
 //============================================
 
-numbers.foreach((item) => console.log(item));
+numbers.foreach(function (item) {
+  console.log(item);
+});
 
 //============================================
 // filter
 //============================================
 
-let oddNumbers = numbers.filter((element) => element % 2);
+var oddNumbers = numbers.filter(function (element) {
+  return element % 2 !== 0;
+});
 console.log(oddNumbers);
 
 //============================================
@@ -108,15 +150,37 @@ console.log(oddNumbers);
 
 // reduce without intial value
 
-let sumOfArray = numbers.reduce(
-  (accumulator, element) => element + accumulator
-);
+var sumOfArray = numbers.reduce(function (accumulator, element) {
+  return element + accumulator;
+});
 console.log(sumOfArray);
 
 // reduce with intial value
 
-let sumOfArrayPlus100 = numbers.reduce(
-  (accumulator, element) => element + accumulator,
-  100
-);
+var sumOfArrayPlus100 = numbers.reduce(function (accumulator, element) {
+  return element + accumulator, 100;
+});
 console.log(sumOfArrayPlus100);
+
+//============================================
+// findIndex
+//============================================
+
+var firstMultipleOf3 = numbers.findIndex((element) => element % 3 === 0);
+
+//============================================
+// indexOf
+//============================================
+
+var indexOf1 = numbers.indexOf(1);
+
+//============================================
+// find
+//============================================
+
+var firstElementGreaterThan3 = numbers.find((e) => e > 3);
+
+//============================================
+// lastIndexOf
+//============================================
+var lastIndexOf1 = numbers.lastIndexOf(1);
