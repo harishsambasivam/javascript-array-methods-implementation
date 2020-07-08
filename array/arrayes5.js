@@ -1,3 +1,5 @@
+"use strict";
+
 var Array = /*#__PURE__*/ (function () {
   function Array(value) {
     this.internalArray = value;
@@ -7,86 +9,84 @@ var Array = /*#__PURE__*/ (function () {
   var _proto = Array.prototype;
 
   _proto.foreach = function foreach(callback) {
-    // Robustness principle – Postel’s law, after Jon Postel
-    if (typeof callback !== "function") {
+    if (typeof callback !== "function")
       throw new TypeError(callback + " is not a function");
-    }
+    var element;
+    var array = this.internalArray;
 
     for (var index = 0; index < this.length; index++) {
-      var currentValue = this.internalArray[index];
-      callback(currentValue, index, this.internalArray);
+      element = array[index];
+      callback(element, index, array);
     }
   };
 
   _proto.customMap = function customMap(callback) {
-    // Robustness principle – Postel’s law, after Jon Postel
-    if (typeof callback !== "function") {
+    if (typeof callback !== "function")
       throw new TypeError(callback + " is not a function");
-    }
-
-    var transformedArray = []; // Projects each element of a sequence into a new form.
+    var transformedArray = [],
+      element;
+    var array = this.internalArray;
 
     for (var index = 0; index < this.length; index++) {
-      var currentValue = this.internalArray[index];
-      var currentTransformedValue = callback(
-        currentValue,
-        index,
-        this.internalArray
-      );
-      transformedArray.push(currentTransformedValue);
+      element = array[index];
+      var transformedValue = callback(element, index, array);
+      transformedArray.push(transformedValue);
     }
 
     return transformedArray;
   };
 
-  _proto.reduce = function reduce(callback, initialValue) {
-    // Robustness principle – Postel’s law, after Jon Postel
-    if (typeof callback !== "function") {
-      throw new TypeError(callback + " is not a function");
-    }
-    var accumulator = initialValue;
-    var startIndex = 0;
-    if (initialValue === undefined) {
-      accumulator = this.internalArray[0];
-      startIndex = 1;
-    }
-
-    for (var index = startIndex; index < this.length; index++) {
-      const value = this.internalArray[index];
-      accumulator = callback(
-        accumulator,
-        this.internalArray[index],
-        this.internalArray
-      );
-    }
-    return accumulator;
-  };
-
   _proto.filter = function filter(callback) {
-    // Robustness principle – Postel’s law, after Jon Postel
-    if (typeof callback !== "function") {
+    if (typeof callback !== "function")
       throw new TypeError(callback + " is not a function");
-    }
-    var result = [];
-    var element;
+    var result = [],
+      element;
+    var array = this.internalArray;
+
     for (var index = 0; index < this.length; index++) {
-      element = this.internalArray[index];
-      if (callback(element, index, this.internalArray)) {
-        result.push(this.internalArray[index]);
-      }
+      element = array[index];
+      if (callback(element, index, array)) result.push(element);
     }
+
     return result;
   };
 
-  _proto.findIndex = function findIndex(callback) {
-    // Robustness principle – Postel’s law, after Jon Postel
+  _proto.reduce = function reduce(callback, initialValue) {
     if (typeof callback !== "function") {
       throw new TypeError(callback + " is not a function");
     }
+
+    var accumulator = initialValue;
+    var startIndex = 0;
+    var array = this.internalArray;
+
+    if (initialValue === undefined) {
+      accumulator = array[0];
+      startIndex = 1;
+    }
+
     var element;
+
+    for (var index = startIndex; index < this.length; index++) {
+      element = array[index];
+      accumulator = callback(accumulator, element, array);
+    }
+
+    return accumulator;
+  };
+
+  _proto.findIndex = function findIndex(callback) {
+    if (typeof callback !== "function") {
+      throw new TypeError(callback + " is not a function");
+    }
+
+    var element;
+    var array = this.internalArray;
+
     for (var index = 0; index < this.length; index++) {
-      element = this.internalArray[index];
-      if (callback(element, index, this.internalArray)) {
+      element = array[index];
+
+      if (callback(element, index, array)) {
         return index;
       }
     }
@@ -95,31 +95,83 @@ var Array = /*#__PURE__*/ (function () {
   };
 
   _proto.find = function find(callback) {
-    // Robustness principle – Postel’s law, after Jon Postel
+    var array = this.internalArray;
+
     if (typeof callback !== "function") {
       throw new TypeError(callback + " is not a function");
     }
+
     var index = this.findIndex(callback);
+
     if (index === -1) {
       return undefined;
     }
-    return this.internalArray[index];
+
+    var foundElement = array[index];
+    return foundElement;
   };
 
   _proto.indexOf = function indexOf(searchedElement) {
-    var index = this.findIndex((element) => element === searchedElement);
+    var index = this.findIndex(function (element) {
+      return element === searchedElement;
+    });
     return index;
   };
 
   _proto.lastIndexOf = function lastIndexOf(searchedElement) {
-    var value;
+    var element;
+    var array = this.internalArray;
+
     for (var index = this.length - 1; index >= 0; index--) {
-      value = this.internalArray[index];
-      if (value === searchedElement) {
+      element = array[index];
+
+      if (element === searchedElement) {
         return index;
       }
     }
+
     return -1;
+  };
+
+  _proto.includes = function includes(searchedElement) {
+    var index = this.findIndex(function (element) {
+      return element === searchedElement;
+    });
+    return index != -1 ? true : false;
+  };
+
+  _proto.every = function every(callback) {
+    if (typeof callback !== "function")
+      throw TypeError(callback + "is not a function");
+    var element;
+    var array = this.internalArray;
+
+    for (var index = 0; index < this.length; index++) {
+      element = array[index];
+
+      if (!callback(element, index, array)) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  _proto.some = function some(callback) {
+    if (typeof callback !== "function")
+      throw TypeError(callback + "is not a function");
+    var element;
+    var array = this.internalArray;
+
+    for (var index = 0; index < this.length; index++) {
+      element = array[index];
+
+      if (callback(element, index, array)) {
+        return true;
+      }
+    }
+
+    return false;
   };
 
   return Array;
@@ -128,7 +180,6 @@ var Array = /*#__PURE__*/ (function () {
 //============================================
 // Outputs and tests
 //============================================
-
 //============================================
 // new Array
 //============================================
@@ -164,15 +215,12 @@ console.log(oddNumbers);
 //============================================
 // reduce
 //============================================
-
 // reduce without intial value
 
 var sumOfArray = numbers.reduce(function (accumulator, element) {
   return element + accumulator;
 });
-console.log(sumOfArray);
-
-// reduce with intial value
+console.log(sumOfArray); // reduce with intial value
 
 var sumOfArrayPlus100 = numbers.reduce(function (accumulator, element) {
   return element + accumulator, 100;
@@ -183,7 +231,9 @@ console.log(sumOfArrayPlus100);
 // findIndex
 //============================================
 
-var firstMultipleOf3 = numbers.findIndex((element) => element % 3 === 0);
+var firstMultipleOf3 = numbers.findIndex(function (element) {
+  return element % 3 === 0;
+});
 
 //============================================
 // indexOf
@@ -195,9 +245,34 @@ var indexOf1 = numbers.indexOf(1);
 // find
 //============================================
 
-var firstElementGreaterThan3 = numbers.find((e) => e > 3);
+var firstElementGreaterThan3 = numbers.find(function (element) {
+  return element > 3;
+});
 
 //============================================
 // lastIndexOf
 //============================================
+
 var lastIndexOf1 = numbers.lastIndexOf(1);
+
+//============================================
+// some
+//============================================
+
+numbers.some(function (element) {
+  return element % 2 === 0;
+});
+
+//============================================
+// every
+//============================================
+
+numbers.every(function (element) {
+  return element % 2 === 0;
+});
+
+//============================================
+// includes
+//============================================
+
+numbers.includes(100);

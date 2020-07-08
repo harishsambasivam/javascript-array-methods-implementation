@@ -5,40 +5,42 @@ class Array {
   }
 
   foreach(callback) {
-    if (typeof callback !== "function") {
+    if (typeof callback !== "function")
       throw new TypeError(callback + " is not a function");
-    }
-    for (let i = 0; i < this.length; i++) {
-      const currentValue = this.internalArray[i];
-      callback(currentValue, i, this.internalArray);
+
+    let element;
+    const array = this.internalArray;
+    for (let index = 0; index < this.length; index++) {
+      element = array[index];
+      callback(element, index, array);
     }
   }
 
   customMap(callback) {
-    if (typeof callback !== "function") {
+    if (typeof callback !== "function")
       throw new TypeError(callback + " is not a function");
-    }
-    let transformedArray = [];
-    for (let i = 0; i < this.length; i++) {
-      const currentValue = this.internalArray[i];
-      const currentTransformedValue = callback(
-        currentValue,
-        i,
-        this.internalArray
-      );
-      transformedArray.push(currentTransformedValue);
+
+    let transformedArray = [],
+      element;
+    const array = this.internalArray;
+    for (let index = 0; index < this.length; index++) {
+      element = array[index];
+      const transformedValue = callback(element, index, array);
+      transformedArray.push(transformedValue);
     }
     return transformedArray;
   }
 
   filter(callback) {
-    if (typeof callback !== "function") {
+    if (typeof callback !== "function")
       throw new TypeError(callback + " is not a function");
-    }
-    let result = [];
+
+    let result = [],
+      element;
+    const array = this.internalArray;
     for (let index = 0; index < this.length; index++) {
-      if (callback(this.internalArray[index], index, this.internalArray))
-        result.push(this.internalArray[index]);
+      element = array[index];
+      if (callback(element, index, array)) result.push(element);
     }
     return result;
   }
@@ -49,18 +51,16 @@ class Array {
     }
     let accumulator = initialValue;
     let startIndex = 0;
+    const array = this.internalArray;
+
     if (initialValue === undefined) {
-      accumulator = this.internalArray[0];
+      accumulator = array[0];
       startIndex = 1;
     }
-
+    let element;
     for (let index = startIndex; index < this.length; index++) {
-      const value = this.internalArray[index];
-      accumulator = callback(
-        accumulator,
-        this.internalArray[index],
-        this.internalArray
-      );
+      element = array[index];
+      accumulator = callback(accumulator, element, array);
     }
     return accumulator;
   }
@@ -70,17 +70,20 @@ class Array {
       throw new TypeError(callback + " is not a function");
     }
     let element;
+    const array = this.internalArray;
+
     for (let index = 0; index < this.length; index++) {
-      element = this.internalArray[index];
-      if (callback(element, index, this.internalArray)) {
+      element = array[index];
+      if (callback(element, index, array)) {
         return index;
       }
     }
-
     return -1;
   }
 
   find(callback) {
+    const array = this.internalArray;
+
     if (typeof callback !== "function") {
       throw new TypeError(callback + " is not a function");
     }
@@ -88,7 +91,8 @@ class Array {
     if (index === -1) {
       return undefined;
     }
-    return this.internalArray[index];
+    let foundElement = array[index];
+    return foundElement;
   }
 
   indexOf(searchedElement) {
@@ -97,14 +101,51 @@ class Array {
   }
 
   lastIndexOf(searchedElement) {
-    let value;
+    let element;
+    const array = this.internalArray;
+
     for (let index = this.length - 1; index >= 0; index--) {
-      value = this.internalArray[index];
-      if (value === searchedElement) {
+      element = array[index];
+      if (element === searchedElement) {
         return index;
       }
     }
     return -1;
+  }
+
+  includes(searchedElement) {
+    let index = this.findIndex((element) => element === searchedElement);
+    return index != -1 ? true : false;
+  }
+
+  every(callback) {
+    if (typeof callback !== "function")
+      throw TypeError(callback + "is not a function");
+    let element;
+    const array = this.internalArray;
+
+    for (let index = 0; index < this.length; index++) {
+      element = array[index];
+      if (!callback(element, index, array)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  some(callback) {
+    if (typeof callback !== "function")
+      throw TypeError(callback + "is not a function");
+    let element;
+    const array = this.internalArray;
+
+    for (let index = 0; index < this.length; index++) {
+      element = array[index];
+      if (callback(element, index, array)) {
+        return true;
+      }
+    }
+    return false;
   }
 }
 
@@ -178,9 +219,28 @@ var indexOf1 = numbers.indexOf(1);
 // find
 //============================================
 
-var firstElementGreaterThan3 = numbers.find((e) => e > 3);
+var firstElementGreaterThan3 = numbers.find((element) => element > 3);
 
 //============================================
 // lastIndexOf
 //============================================
+
 var lastIndexOf1 = numbers.lastIndexOf(1);
+
+//============================================
+// some
+//============================================
+
+numbers.some((element) => element % 2 === 0);
+
+//============================================
+// every
+//============================================
+
+numbers.every((element) => element % 2 === 0);
+
+//============================================
+// includes
+//============================================
+
+numbers.includes(100);
