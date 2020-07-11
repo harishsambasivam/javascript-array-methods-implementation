@@ -1,7 +1,7 @@
 class Array {
   constructor(value = []) {
-    this.data = value;
-    this.length = this.internalArray.length;
+    this.internalArray = value;
+    this.length = 0;
   }
 
   get length() {
