@@ -1,7 +1,15 @@
 class Array {
-  constructor(value) {
-    this.internalArray = value;
+  constructor(value = []) {
+    this.data = value;
     this.length = this.internalArray.length;
+  }
+
+  get length() {
+    return this._length;
+  }
+
+  set length(value) {
+    this._length = value;
   }
 
   foreach(callback) {
@@ -147,7 +155,108 @@ class Array {
     }
     return false;
   }
+
+  isArray(array) {
+    let objectToString = Object.prototype.toString.bind(array);
+    let result = objectToString();
+    if (result !== "[object Array]") return false;
+    return true;
+  }
+
+  concat(...values) {
+    let { length } = values;
+    let result = [...this.internalArray];
+    for (let index = 0; index < length; index++) {
+      if (this.isArray(values[index])) {
+        result.push(...values[index]);
+      } else {
+        result.push(values[index]);
+      }
+    }
+    return result;
+  }
+
+  flat(depth = Infinity, array = this.internalArray) {
+    if (depth < 1 || !this.isArray(array)) {
+      return array;
+    }
+
+    return array.reduce((result, current) => {
+      return result.concat(this.flat(depth - 1, current));
+    }, []);
+  }
+
+  flatMap(callback) {
+    if (typeof callback !== "function")
+      throw new TypeError(callback + " is not a function");
+    return this.flat(1, this.customMap(callback));
+  }
+
+  join(seperator = ",") {
+    return this.internalArray.reduce((acc, current, index) => {
+      if (index === 0) return current;
+      return `${acc}${seperator}${current}`;
+    }, "");
+  }
+
+  reverse() {
+    let array = this.internalArray;
+    for (let left = 0, right = this.length - 1; left < right; left++, right--) {
+      [array[left], array[right]] = [array[right], array[left]];
+    }
+    return array;
+  }
+
+  shift() {
+    if (this.length === 0) return undefined;
+    let firstElement = this.internalArray[0];
+    for (let i = 1; i < this.length; i++) {
+      let value = this.internalArray[i];
+      this.internalArray[i - 1] = value;
+    }
+    this.internalArray.length--; // wierd🤒 work around to remove last element
+    this.length--;
+    return firstElement;
+  }
+
+  unshift(value) {
+    for (let i = 0; i <= this.length; i++) {
+      let temp = this.internalArray[i];
+      this.internalArray[i] = value;
+      value = temp;
+    }
+    this.length++;
+    return this.length;
+  }
 }
+
+let deepArray = new Array([1, 2, [7, 8, [1, 2]]]);
+
+// _ = deepArray.flat();
+// _;
+
+_ = deepArray.flatMap((x) => [x, x * 2]);
+_;
+
+_ = deepArray.flat().join(" ");
+_;
+
+let array = new Array();
+_ = array.reverse();
+_;
+
+_ = array.shift();
+_ = array.shift();
+_ = array.shift();
+_ = array.shift();
+_ = array.shift();
+array;
+_;
+
+_ = array.unshift(0);
+_ = array.unshift(-1);
+_;
+array;
 
 //============================================
 // Outputs and tests
@@ -157,7 +266,7 @@ class Array {
 // new Array
 //============================================
 
-var numbers = new Array([1, 2, 3, 4, 5, 6, 6, 5, 4, 3, 2, 1]);
+var numbers = new Array([1, 2, 3, 4, 5]);
 
 //============================================
 // map
@@ -244,3 +353,13 @@ numbers.every((element) => element % 2 === 0);
 //============================================
 
 numbers.includes(100);
+
+//============================================
+// concat
+//============================================
+numbers;
+_ = numbers.concat([21, 2], 3, undefined, [[1]]);
+_;
+//============================================
+// flat
+//============================================

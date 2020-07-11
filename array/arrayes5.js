@@ -2,6 +2,10 @@
 
 var Array = /*#__PURE__*/ (function () {
   function Array(value) {
+    if (value === void 0) {
+      value = [];
+    }
+
     this.internalArray = value;
     this.length = this.internalArray.length;
   }
@@ -173,6 +177,41 @@ var Array = /*#__PURE__*/ (function () {
 
     return false;
   };
+
+  _proto.isArray = function isArray(array) {
+    var objectToString = Object.prototype.toString.bind(array);
+    var result = objectToString();
+    if (result !== "[object Array]") return false;
+    return true;
+  };
+
+  _proto.concat = function concat() {
+    for (
+      var length = arguments.length, values = new Array(length), index = 0;
+      index < length;
+      index++
+    ) {
+      values[index] = arguments[index];
+    }
+
+    var length = values.length;
+    var result = [].concat(this.internalArray);
+
+    for (var index = 0; index < length; index++) {
+      if (this.isArray(values[index])) {
+        result.push.apply(result, values[index]);
+      } else {
+        result.push(values[index]);
+      }
+    }
+
+    return result;
+  };
+
+  //   flat(depth = 2,array=this.internalArray){
+  //      return  depth > 0 ? array.reduce((acc, val) => acc.concat(flat(depth-1,values)), []) : flat(depth - 1,);
+  //      return 1;
+  //   }
 
   return Array;
 })();
