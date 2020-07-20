@@ -1,0 +1,26 @@
+{
+  "name": "javascript_under_the_hood",
+  "version": "1.0.0",
+  "description": "Implemetation of builtin javascript methods",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harishsambasivam/javascript-under-the-hood.git"
+  },
+  "keywords": [
+    "javascript",
+    "javascript-under-the-hood"
+  ],
+  "author": "Harish Sambasivam",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/harishsambasivam/javascript-under-the-hood/issues"
+  },
+  "homepage": "https://github.com/harishsambasivam/javascript-under-the-hood#readme",
+  "devDependencies": {
+    "jest": "^26.1.0"
+  }
+}

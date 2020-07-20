@@ -1,7 +1,29 @@
 class Array {
-  constructor(value = []) {
-    this.internalArray = value;
+  constructor() {
+    this.data = {};
     this.length = 0;
+    if (arguments[0]) {
+      if (
+        Object.prototype.toString.call(arguments[0]) !== "[object Array]" &&
+        Object.prototype.toString.call(arguments[0]) !== "[object Number]"
+      ) {
+        throw new TypeError("constructor only accepts number or array");
+      }
+    }
+
+    if (Object.prototype.toString.call(arguments[0]) === "[object Array]") {
+      let values = arguments[0];
+      let length = values.length;
+      for (let index = 0; index < length; index++) {
+        this.data[index] = values[index];
+        this.length++;
+      }
+    }
+
+    if (Object.prototype.toString.call(arguments[0]) === "[object Number]") {
+      let length = arguments[0];
+      this.length = length;
+    }
   }
 
   get length() {
@@ -15,9 +37,8 @@ class Array {
   foreach(callback) {
     if (typeof callback !== "function")
       throw new TypeError(callback + " is not a function");
-
     let element;
-    const array = this.internalArray;
+    const array = this.data;
     for (let index = 0; index < this.length; index++) {
       element = array[index];
       callback(element, index, array);
@@ -30,7 +51,7 @@ class Array {
 
     let transformedArray = [],
       element;
-    const array = this.internalArray;
+    const array = this.data;
     for (let index = 0; index < this.length; index++) {
       element = array[index];
       const transformedValue = callback(element, index, array);
@@ -45,7 +66,7 @@ class Array {
 
     let result = [],
       element;
-    const array = this.internalArray;
+    const array = this.data;
     for (let index = 0; index < this.length; index++) {
       element = array[index];
       if (callback(element, index, array)) result.push(element);
@@ -59,7 +80,7 @@ class Array {
     }
     let accumulator = initialValue;
     let startIndex = 0;
-    const array = this.internalArray;
+    const array = this.data;
 
     if (initialValue === undefined) {
       accumulator = array[0];
@@ -78,7 +99,7 @@ class Array {
       throw new TypeError(callback + " is not a function");
     }
     let element;
-    const array = this.internalArray;
+    const array = this.data;
 
     for (let index = 0; index < this.length; index++) {
       element = array[index];
@@ -90,7 +111,7 @@ class Array {
   }
 
   find(callback) {
-    const array = this.internalArray;
+    const array = this.data;
 
     if (typeof callback !== "function") {
       throw new TypeError(callback + " is not a function");
@@ -110,7 +131,7 @@ class Array {
 
   lastIndexOf(searchedElement) {
     let element;
-    const array = this.internalArray;
+    const array = this.data;
 
     for (let index = this.length - 1; index >= 0; index--) {
       element = array[index];
@@ -130,7 +151,7 @@ class Array {
     if (typeof callback !== "function")
       throw TypeError(callback + "is not a function");
     let element;
-    const array = this.internalArray;
+    const array = this.data;
 
     for (let index = 0; index < this.length; index++) {
       element = array[index];
@@ -145,7 +166,7 @@ class Array {
     if (typeof callback !== "function")
       throw TypeError(callback + "is not a function");
     let element;
-    const array = this.internalArray;
+    const array = this.data;
 
     for (let index = 0; index < this.length; index++) {
       element = array[index];
@@ -165,7 +186,8 @@ class Array {
 
   concat(...values) {
     let { length } = values;
-    let result = [...this.internalArray];
+    let result = [];
+    for (let i = 0; i < this.length; i++) result.push(this.data[i]);
     for (let index = 0; index < length; index++) {
       if (this.isArray(values[index])) {
         result.push(...values[index]);
@@ -176,12 +198,13 @@ class Array {
     return result;
   }
 
-  flat(depth = Infinity, array = this.internalArray) {
+  flat(depth = Infinity, array = Object.values(this.data)) {
+    console.log(Object.values(this.data));
     if (depth < 1 || !this.isArray(array)) {
       return array;
     }
 
-    return array.reduce((result, current) => {
+    return Object.values(this.data).reduce((result, current) => {
       return result.concat(this.flat(depth - 1, current));
     }, []);
   }
@@ -193,14 +216,14 @@ class Array {
   }
 
   join(seperator = ",") {
-    return this.internalArray.reduce((acc, current, index) => {
+    return this.data.reduce((acc, current, index) => {
       if (index === 0) return current;
       return `${acc}${seperator}${current}`;
     }, "");
   }
 
   reverse() {
-    let array = this.internalArray;
+    let array = this.data;
     for (let left = 0, right = this.length - 1; left < right; left++, right--) {
       [array[left], array[right]] = [array[right], array[left]];
     }
@@ -209,157 +232,50 @@ class Array {
 
   shift() {
     if (this.length === 0) return undefined;
-    let firstElement = this.internalArray[0];
+    let firstElement = this.data[0];
     for (let i = 1; i < this.length; i++) {
-      let value = this.internalArray[i];
-      this.internalArray[i - 1] = value;
+      let value = this.data[i];
+      this.data[i - 1] = value;
     }
-    this.internalArray.length--; // wierd🤒 work around to remove last element
+    // weird
     this.length--;
     return firstElement;
   }
 
   unshift(value) {
     for (let i = 0; i <= this.length; i++) {
-      let temp = this.internalArray[i];
-      this.internalArray[i] = value;
+      let temp = this.data[i];
+      this.data[i] = value;
       value = temp;
     }
     this.length++;
     return this.length;
   }
+
+  slice(startIndex = 0, endIndex = this.length) {
+    const result = [];
+    for (let index = startIndex; index < endIndex; index++) {
+      let element = this.data[index];
+      if (index < this.length) {
+        result.push(element);
+      }
+    }
+    return result;
+  }
+
+  splice(start = 0, deleteCount = 0, ...items) {
+    const firstHalf = this.slice(0, start);
+    const secondHalf = this.slice(start, this.length);
+    const removed = this.slice(start, start + deleteCount);
+    let result = [];
+    if (items !== undefined) {
+      result = firstHalf.concat(items, secondHalf);
+    }
+    for (let index = 0; index < result.length; index++) {
+      this.data[index] = result[index];
+    }
+    return removed;
+  }
 }
 
-let deepArray = new Array([1, 2, [7, 8, [1, 2]]]);
-
-// _ = deepArray.flat();
-// _;
-
-_ = deepArray.flatMap((x) => [x, x * 2]);
-_;
-
-_ = deepArray.flat().join(" ");
-_;
-
-let array = new Array();
-_ = array.reverse();
-_;
-
-_ = array.shift();
-_ = array.shift();
-_ = array.shift();
-_ = array.shift();
-_ = array.shift();
-array;
-_;
-
-_ = array.unshift(0);
-_ = array.unshift(-1);
-_;
-array;
-
-//============================================
-// Outputs and tests
-//============================================
-
-//============================================
-// new Array
-//============================================
-
-var numbers = new Array([1, 2, 3, 4, 5]);
-
-//============================================
-// map
-//============================================
-
-var multipleOfTwo = numbers.customMap(function (element) {
-  return element * 2;
-});
-console.log(multipleOfTwo);
-
-//============================================
-// foreach
-//============================================
-
-numbers.foreach(function (item) {
-  console.log(item);
-});
-
-//============================================
-// filter
-//============================================
-
-var oddNumbers = numbers.filter(function (element) {
-  return element % 2 !== 0;
-});
-console.log(oddNumbers);
-
-//============================================
-// reduce
-//============================================
-
-// reduce without intial value
-
-var sumOfArray = numbers.reduce(function (accumulator, element) {
-  return element + accumulator;
-});
-console.log(sumOfArray);
-
-// reduce with intial value
-
-var sumOfArrayPlus100 = numbers.reduce(function (accumulator, element) {
-  return element + accumulator, 100;
-});
-console.log(sumOfArrayPlus100);
-
-//============================================
-// findIndex
-//============================================
-
-var firstMultipleOf3 = numbers.findIndex((element) => element % 3 === 0);
-
-//============================================
-// indexOf
-//============================================
-
-var indexOf1 = numbers.indexOf(1);
-
-//============================================
-// find
-//============================================
-
-var firstElementGreaterThan3 = numbers.find((element) => element > 3);
-
-//============================================
-// lastIndexOf
-//============================================
-
-var lastIndexOf1 = numbers.lastIndexOf(1);
-
-//============================================
-// some
-//============================================
-
-numbers.some((element) => element % 2 === 0);
-
-//============================================
-// every
-//============================================
-
-numbers.every((element) => element % 2 === 0);
-
-//============================================
-// includes
-//============================================
-
-numbers.includes(100);
-
-//============================================
-// concat
-//============================================
-numbers;
-_ = numbers.concat([21, 2], 3, undefined, [[1]]);
-_;
-//============================================
-// flat
-//============================================
+module.exports = { Array };
