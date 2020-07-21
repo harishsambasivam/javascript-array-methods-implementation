@@ -276,6 +276,48 @@ class Array {
     }
     return removed;
   }
+
+  [Symbol.iterator]() {
+    let index = 0;
+    let array = this.data;
+    let length = this.length;
+    return {
+      next() {
+        if (index < length) {
+          return {
+            done: false,
+            value: array[index++],
+          };
+        }
+        return {
+          done: true,
+        };
+      },
+    };
+  }
+
+  values() {
+    let index = 0;
+    let array = this.data;
+    let length = this.length;
+    return {
+      [Symbol.iterator]() {
+        return {
+          next() {
+            if (index < length) {
+              return {
+                done: false,
+                value: index++,
+              };
+            }
+            return {
+              done: true,
+            };
+          },
+        };
+      },
+    };
+  }
 }
 
 module.exports = { Array };
