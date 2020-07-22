@@ -296,9 +296,15 @@ class Array {
     };
   }
 
-  values() {
+  // arr.fill(value[, start[, end]])
+  fill(value, startIndex = 0, endIndex = this.length) {
+    for (let index = startIndex; index < endIndex; index++) {
+      this.data[index] = value;
+    }
+  }
+
+  keys() {
     let index = 0;
-    let array = this.data;
     let length = this.length;
     return {
       [Symbol.iterator]() {
@@ -311,6 +317,31 @@ class Array {
               };
             }
             return {
+              value: undefined,
+              done: true,
+            };
+          },
+        };
+      },
+    };
+  }
+
+  values() {
+    let index = 0;
+    let array = this.data;
+    let length = this.length;
+    return {
+      [Symbol.iterator]() {
+        return {
+          next() {
+            if (index < length) {
+              return {
+                done: false,
+                value: array[index++],
+              };
+            }
+            return {
+              value: undefined,
               done: true,
             };
           },
@@ -321,3 +352,16 @@ class Array {
 }
 
 module.exports = { Array };
+
+const arr = new Array(10);
+arr.fill(1, 0);
+const keys = arr.keys();
+const values = arr.values();
+
+for (let key of keys) {
+  console.log(key); // 0,1,2,3,4,5,6,7,8,9
+}
+
+for (let value of values) {
+  console.log(value); // 1,1,1,1,1,1,1,1,1,1
+}
