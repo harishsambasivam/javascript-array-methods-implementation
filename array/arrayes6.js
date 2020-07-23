@@ -349,19 +349,49 @@ class Array {
       },
     };
   }
+  // array.entries()
+  entries() {
+    let index = 0;
+    let length = this.length;
+    let array = this.data;
+
+    return {
+      [Symbol.iterator]() {
+        return {
+          next() {
+            if (index < length) {
+              return {
+                value: [index, array[index++]],
+                done: false,
+              };
+            }
+            return {
+              value: undefined,
+              done: true,
+            };
+          },
+        };
+      },
+    };
+  }
+
+  // arr.push([element1[, ...[, elementN]]])
+  push(...value) {
+    for (let index = 0; index < value.length; index++) {
+      this.data[this.length++] = value[index];
+    }
+
+    return this.length;
+  }
+
+  // arrName.pop()
+  pop() {
+    if (this.length === 0) return undefined;
+    const value = this.data[this.length - 1];
+    delete this.data[this.length - 1];
+    --this.length;
+    return value;
+  }
 }
 
 module.exports = { Array };
-
-const arr = new Array(10);
-arr.fill(1, 0);
-const keys = arr.keys();
-const values = arr.values();
-
-for (let key of keys) {
-  console.log(key); // 0,1,2,3,4,5,6,7,8,9
-}
-
-for (let value of values) {
-  console.log(value); // 1,1,1,1,1,1,1,1,1,1
-}
