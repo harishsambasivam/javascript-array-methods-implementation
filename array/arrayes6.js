@@ -89,7 +89,7 @@ class Array {
     let element;
     for (let index = startIndex; index < this.length; index++) {
       element = array[index];
-      accumulator = callback(accumulator, element, array);
+      accumulator = callback(accumulator, element, index, array);
     }
     return accumulator;
   }
@@ -216,7 +216,7 @@ class Array {
   }
 
   join(seperator = ",") {
-    return this.data.reduce((acc, current, index) => {
+    return this.reduce((acc, current, index) => {
       if (index === 0) return current;
       return `${acc}${seperator}${current}`;
     }, "");
@@ -392,6 +392,22 @@ class Array {
     --this.length;
     return value;
   }
+
+  of() {
+    let newArray = [...arguments].map((argument) => argument); // The arguments object is not an Array. It is similar, but lacks all Array properties except length. For example, it does not have the pop() method.
+    return newArray;
+  }
+
+  toString() {
+    return this.join();
+  }
 }
 
 module.exports = { Array };
+
+let ar = new Array([1, 2, 3, 5]);
+
+_ = ar.of(1, 2, "a");
+_;
+_ = ar.toString();
+_;
